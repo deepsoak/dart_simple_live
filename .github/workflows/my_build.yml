@@ -1,11 +1,17 @@
 name: My Android Build
 
 on:
-  workflow_dispatch: # 允许你手动点击按钮触发编译
+  workflow_dispatch: # 允许手动点击按钮触发
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    # 【关键修改】：这里设置了默认工作目录
+    # 告诉 GitHub Actions 所有 run 命令都在这个子文件夹里跑
+    defaults:
+      run:
+        working-directory: ./simple_live_app
 
     steps:
     - uses: actions/checkout@v3
@@ -24,13 +30,13 @@ jobs:
     - name: Get Dependencies
       run: flutter pub get
 
-    # 生成未签名的 Release 包，适合自己安装测试
     - name: Build APK
+      # 加上 --no-sound-null-safety 是为了防止旧代码报错，如果不需要可以去掉
       run: flutter build apk --release --no-sound-null-safety
-      # 注意：如果原项目代码比较老，可能需要加 --no-sound-null-safety，如果报错可以去掉这半句再试
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: my-app-release
-        path: build/app/outputs/flutter-apk/app-release.apk
+        # 注意：这里的路径必须写全，包含子文件夹名
+        path: simple_live_app/build/app/outputs/flutter-apk/app-release.apk
