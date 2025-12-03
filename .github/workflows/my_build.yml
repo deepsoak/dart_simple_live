@@ -7,8 +7,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    # 【关键修改】：这里设置了默认工作目录
-    # 告诉 GitHub Actions 所有 run 命令都在这个子文件夹里跑
+    # 【关键设置】告诉 GitHub Actions：所有 run 命令都在这个子文件夹里跑
     defaults:
       run:
         working-directory: ./simple_live_app
@@ -26,17 +25,19 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
+        # 如果最新版编译失败，可以尝试取消下面这行的注释，强制使用旧版本
+        # flutter-version: '3.19.0'
 
     - name: Get Dependencies
       run: flutter pub get
 
     - name: Build APK
-      # 加上 --no-sound-null-safety 是为了防止旧代码报错，如果不需要可以去掉
-      run: flutter build apk --release --no-sound-null-safety
+      # 【已修改】删除了 --no-sound-null-safety，因为它在最新版已被移除
+      run: flutter build apk --release
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: my-app-release
-        # 注意：这里的路径必须写全，包含子文件夹名
+        # 路径必须包含子文件夹名
         path: simple_live_app/build/app/outputs/flutter-apk/app-release.apk
