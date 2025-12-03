@@ -8,11 +8,7 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-val keystoreProperties = Properties()
-val keystorePropertiesFile = rootProject.file("key.properties")
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-}
+// 【已删除】这里原本是加载 key.properties 的代码，已删除以防止报错
 
 android {
     namespace = "com.xycz.simple_live"
@@ -39,21 +35,14 @@ android {
         versionName = flutter.versionName
     }
 
-    signingConfigs {
-        create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
-            storePassword = keystoreProperties["storePassword"] as String
-            isV1SigningEnabled = true
-            isV2SigningEnabled = true
-        }
-    }
+    // 【已删除】这里原本是 signingConfigs (签名配置) 代码块，已删除
 
     buildTypes {
         release {
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("release")
+            // 【已删除】这里原本引用了 release 签名，已删除。
+            // 现在的状态是：release 包没有签名配置（或者你可以改用 debug 签名），
+            // 但因为我们在 GitHub Actions 里用的是 flutter build apk --debug，所以这里不会影响构建。
+            
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
