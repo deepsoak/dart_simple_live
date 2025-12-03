@@ -1,0 +1,36 @@
+name: My Android Build
+
+on:
+  workflow_dispatch: # 允许你手动点击按钮触发编译
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+
+    - name: Get Dependencies
+      run: flutter pub get
+
+    # 生成未签名的 Release 包，适合自己安装测试
+    - name: Build APK
+      run: flutter build apk --release --no-sound-null-safety
+      # 注意：如果原项目代码比较老，可能需要加 --no-sound-null-safety，如果报错可以去掉这半句再试
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: my-app-release
+        path: build/app/outputs/flutter-apk/app-release.apk
